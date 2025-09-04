@@ -41,7 +41,9 @@
 							<tbody>
 								<tr th:each="dorden:${cart}">
 									<td th:text="${dorden.nombre}"></td>
-									<td th:text="${dorden.precio}"></td>
+									<td th:text="${#strings.concat('$', #numbers.formatDecimal
+										(dorden.precio, 0, 'POINT', 0, 'POINT'))}">
+									</td>
 									<td th:text="${dorden.cantidad}"></td>
 									<td th:text="${#strings.concat('$', #numbers.formatDecimal
 										(dorden.total, 0, 'POINT', 0, 'POINT'))}">
