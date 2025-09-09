@@ -1,7 +1,7 @@
 package com.sena.ecommerce.controller;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.sena.ecommerce.model.DetalleOrden;
 import com.sena.ecommerce.model.Orden;
 import com.sena.ecommerce.model.Producto;
+import com.sena.ecommerce.model.Usuario;
 import com.sena.ecommerce.service.IDetalleOrdenService;
 import com.sena.ecommerce.service.IOrdenService;
 import com.sena.ecommerce.service.IProductoService;
@@ -126,6 +127,45 @@ public class HomeUserController {
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
 		return "usuario/carrito";
+	}
+
+	// metodo para redirigir al carrito de compras sin productos
+	@GetMapping("/getCart")
+	public String getCart(Model model) {
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+		return "/usuario/carrito";
+	}
+
+	// metodo para redirigir a la vista del resumen de la orden
+	@GetMapping("/orden")
+	public String orden(Model model) {
+		Usuario u = usuarioService.findById(2).get();
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+		model.addAttribute("usuario", u);
+		return "usuario/resumenorden";
+	}
+
+	// metodo que genera la orden y los detalles de la orden
+	@GetMapping("/saveOrder")
+	public String saveOrder() {
+		Date fechacreacion = new Date();
+		orden.setFechacreacion(fechacreacion);
+		orden.setNumero(ordenService.generarNumeroOrden());
+		Usuario u = usuarioService.findById(2).get();
+		orden.setUsuario(u);
+		ordenService.save(orden);
+		// guardar detalles de la orden
+		for (DetalleOrden dt : detalles) {
+			dt.setOrden(orden);
+			detalleOrdenService.save(dt);
+		}
+		// limpiar los valores que no se añadan a la siguiente orden o a la orden recien
+		// guardada
+		orden = new Orden();
+		detalles.clear();
+		return "redirect:/";
 	}
 
 }
