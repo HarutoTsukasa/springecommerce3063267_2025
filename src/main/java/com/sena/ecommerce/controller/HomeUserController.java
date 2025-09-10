@@ -160,6 +160,16 @@ public class HomeUserController {
 		for (DetalleOrden dt : detalles) {
 			dt.setOrden(orden);
 			detalleOrdenService.save(dt);
+			// descuento de cantidad de produto comprada del stock del producto
+			Producto p = dt.getProducto();
+			int cantComprada = dt.getCantidad().intValue();// conversion double a int
+			if (p.getCantidad() >= cantComprada) {
+				p.setCantidad(p.getCantidad() - cantComprada);
+				productoService.update(p);
+			} else {
+				throw new IllegalStateException("Stock insuficiente para el producto: " + p.getNombre());
+			}
+
 		}
 		// limpiar los valores que no se añadan a la siguiente orden o a la orden recien
 		// guardada

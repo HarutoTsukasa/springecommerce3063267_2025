@@ -3,6 +3,7 @@ package com.sena.ecommerce.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,19 +43,17 @@ public class OrdenServiceImplement implements IOrdenService {
 
 	@Override
 	public String generarNumeroOrden() {
-
+		// en el se incrementa el numero de la orden para luego pasarlo a string
 		int numero = 0;
-
+		// nos retorna el string con el numero secuencial de la orden
 		String numeroConcatenado = "";
-
+		// lista de ordenes
 		List<Orden> ordenes = findAll();
-
+		// lista de enteros para el incremento
 		List<Integer> numeros = new ArrayList<Integer>();
-
 		// funciones de java8
 		// una variable anonima
 		ordenes.stream().forEach(o -> numeros.add(Integer.parseInt(o.getNumero())));
-
 		// validación
 		if (ordenes.isEmpty()) {
 			numero = 1;
@@ -64,11 +63,11 @@ public class OrdenServiceImplement implements IOrdenService {
 		}
 
 		if (numero < 10) {
-			numeroConcatenado = "T000000000" + String.valueOf(numero);
+			numeroConcatenado = "0000000000" + String.valueOf(numero);
 		} else if (numero < 100) {
-			numeroConcatenado = "T00000000" + String.valueOf(numero);
+			numeroConcatenado = "000000000" + String.valueOf(numero);
 		} else if (numero < 1000) {
-			numeroConcatenado = "T0000000" + String.valueOf(numero);
+			numeroConcatenado = "00000000" + String.valueOf(numero);
 		}
 
 		return numeroConcatenado;
