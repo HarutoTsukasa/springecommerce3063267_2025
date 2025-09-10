@@ -13,11 +13,11 @@
 			<h1 class="display-4 fw-bold mb-4">Bienvenido a PurpleShop</h1>
 			<p class="lead mb-5">Encuentra los mejores productos al mejor precio</p>
 			<div class="search-container">
-				<div class="input-group">
-					<form method="post" th:action="@{/search}">
-						<input id="nombre" name="nombre" type="text" class="form-control form-control"
+				<div>
+					<form class="d-flex" method="post" th:action="@{/search}">
+						<input id="nombre" name="nombre" type="text" class="form-control"
 							placeholder="Buscar productos..." autocomplete="off">
-						<button id="searchToggle" class="btn btn-light" type="button" data-bs-toggle="tooltip"
+						<button id="searchToggle" class="btn btn-info" type="submit" data-bs-toggle="tooltip"
 							data-bs-placement="bottom" title="Buscar">
 							<i class="bi bi-search"></i>
 						</button>
