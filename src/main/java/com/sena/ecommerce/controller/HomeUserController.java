@@ -26,6 +26,8 @@ import com.sena.ecommerce.service.IOrdenService;
 import com.sena.ecommerce.service.IProductoService;
 import com.sena.ecommerce.service.IUsuarioService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/")
 public class HomeUserController {
@@ -52,8 +54,11 @@ public class HomeUserController {
 	Orden orden = new Orden();
 
 	@GetMapping("")
-	public String home(Model model) {
+	public String home(Model model, HttpSession session) {
+		LOGGER.warn("sesion de usuario: {}", session.getAttribute("idUsuario"));
 		model.addAttribute("productos", productoService.findAll());
+		// variable de sesion
+		model.addAttribute("session", session.getAttribute("idUsuario"));
 		return "usuario/home";
 	}
 
@@ -104,7 +109,7 @@ public class HomeUserController {
 		orden.setTotal(sumaTotal);
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
-		return "usuario/carrito";
+		return "/usuario/carrito";
 	}
 
 	// metodo para quitar productos del carrito de compras
@@ -140,8 +145,8 @@ public class HomeUserController {
 
 	// metodo para redirigir a la vista del resumen de la orden
 	@GetMapping("/orden")
-	public String orden(Model model) {
-		Usuario u = usuarioService.findById(2).get();
+	public String orden(Model model, HttpSession session) {
+		Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
 		model.addAttribute("usuario", u);
@@ -150,11 +155,11 @@ public class HomeUserController {
 
 	// metodo que genera la orden y los detalles de la orden
 	@GetMapping("/saveOrder")
-	public String saveOrder() {
+	public String saveOrder(HttpSession session) {
 		Date fechacreacion = new Date();
 		orden.setFechacreacion(fechacreacion);
 		orden.setNumero(ordenService.generarNumeroOrden());
-		Usuario u = usuarioService.findById(2).get();
+		Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
 		orden.setUsuario(u);
 		ordenService.save(orden);
 		// guardar detalles de la orden

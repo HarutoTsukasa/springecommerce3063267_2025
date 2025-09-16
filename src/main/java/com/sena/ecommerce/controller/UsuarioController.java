@@ -1,5 +1,6 @@
 package com.sena.ecommerce.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.sena.ecommerce.model.Orden;
 import com.sena.ecommerce.model.Usuario;
 import com.sena.ecommerce.service.IOrdenService;
 import com.sena.ecommerce.service.IUsuarioService;
@@ -52,9 +54,10 @@ public class UsuarioController {
 		LOGGER.warn("Accesos: {}", usuario);
 		// acceder a la DB para validar
 		Optional<Usuario> userEmail = usuarioService.findByEmail(usuario.getEmail());
-		LOGGER.warn("Usuario obtenido de la DB: {}", userEmail.get());
+		// LOGGER.warn("Usuario obtenido de la DB: {}", userEmail.get());
 		// condicion temporal sin spring security
 		if (userEmail.isPresent()) {
+			LOGGER.warn("Usuario obtenido de la DB: {}", userEmail.get());
 			// id del usuario encontrado
 			session.setAttribute("idUsuario", userEmail.get().getId());
 			// validacion tipo de usuario
@@ -67,6 +70,17 @@ public class UsuarioController {
 			LOGGER.warn("Usuario no existe en DB");
 		}
 		return "redirect:/";
+	}
+
+	// metodo para obtener o listar las ordenes de compras
+	@GetMapping("/compras")
+	public String compras(Model model, HttpSession session) {
+		// sesion de usuario o el idUsuario objeto de session
+		model.addAttribute("session", session.getAttribute("idUsuario"));
+		Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
+		List<Orden> ordenes = ordenService.findByUsuario(u);
+		model.addAttribute("ordenes", ordenes);
+		return "usuario/compras";
 	}
 
 }

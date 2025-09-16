@@ -18,7 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sena.ecommerce.model.Producto;
 import com.sena.ecommerce.model.Usuario;
 import com.sena.ecommerce.service.IProductoService;
+import com.sena.ecommerce.service.IUsuarioService;
 import com.sena.ecommerce.service.UploadFileService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/productos")
@@ -32,6 +35,9 @@ public class ProductoController {
 
 	@Autowired
 	private UploadFileService upload;
+
+	@Autowired
+	private IUsuarioService usuarioservice;
 
 	// metodo de listar productos
 	@GetMapping("")
@@ -48,9 +54,10 @@ public class ProductoController {
 
 	// metodo de creacion de productos
 	@PostMapping("/save")
-	public String save(Producto producto, @RequestParam("img") MultipartFile file) throws IOException {
+	public String save(Producto producto, @RequestParam("img") MultipartFile file, HttpSession session)
+			throws IOException {
 		LOGGER.info("Este es el objeto del producto a guardar en la DB {}", producto);
-		Usuario u = new Usuario(1, "", "", "", "", "", "", "", "");
+		Usuario u = usuarioservice.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
 		producto.setUsuario(u);
 		// validacion imagen del producto
 		if (producto.getId() == null) {
