@@ -132,7 +132,7 @@ public class HomeUserController {
 		orden.setTotal(sumaTotal);
 		model.addAttribute("cart", detalles);
 		model.addAttribute("orden", orden);
-		return "usuario/carrito";
+		return "/usuario/carrito";
 	}
 
 	// metodo para redirigir al carrito de compras sin productos
