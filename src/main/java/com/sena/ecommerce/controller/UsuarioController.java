@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sena.ecommerce.model.Orden;
 import com.sena.ecommerce.model.Usuario;
-import com.sena.ecommerce.service.IDetalleOrdenService;
 import com.sena.ecommerce.service.IOrdenService;
 import com.sena.ecommerce.service.IUsuarioService;
 
@@ -78,7 +77,7 @@ public class UsuarioController {
 	@GetMapping("/compras")
 	public String compras(Model model, HttpSession session) {
 		// sesion de usuario o el idUsuario objeto de session
-		model.addAttribute("session", session.getAttribute("idUsuario"));
+		model.addAttribute("sesion", session.getAttribute("idUsuario"));
 		Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
 		List<Orden> ordenes = ordenService.findByUsuario(u);
 		model.addAttribute("ordenes", ordenes);
@@ -88,7 +87,7 @@ public class UsuarioController {
 	@GetMapping("/detalle/{id}")
 	public String detalleCompra(@PathVariable Integer id, Model model, HttpSession session) {
 		// sesion de usuario o el idUsuario objeto de session
-		model.addAttribute("session", session.getAttribute("idUsuario"));
+		model.addAttribute("sesion", session.getAttribute("idUsuario"));
 		LOGGER.warn("id de la orden: {}", id);
 		Optional<Orden> orden = ordenService.findById(id);
 		model.addAttribute("detalles", orden.get().getDetalle());
