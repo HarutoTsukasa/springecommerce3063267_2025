@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,8 @@ public class UsuarioController {
 	@Autowired
 	private IOrdenService ordenService;
 
+	BCryptPasswordEncoder pe = new BCryptPasswordEncoder();
+
 	@GetMapping("/registro")
 	public String createUser() {
 		return "usuario/registro";
@@ -41,6 +44,8 @@ public class UsuarioController {
 	public String save(Usuario usuario, Model model) {
 		LOGGER.warn("Usuario a registrar: {}", usuario);
 		usuario.setTipo("USER");
+		// cifrar contraseña
+		usuario.setPassword(pe.encode(usuario.getPassword()));
 		usuarioService.save(usuario);
 		return "redirect:/";
 	}
@@ -50,19 +55,23 @@ public class UsuarioController {
 		return "usuario/login";
 	}
 
-	@PostMapping("/acceder")
+	// sin spring security es post y con spring security es get
+	@GetMapping("/acceder")
 	public String acceder(Usuario usuario, HttpSession session) {
 		LOGGER.warn("Accesos: {}", usuario);
 		// acceder a la DB para validar
-		Optional<Usuario> userEmail = usuarioService.findByEmail(usuario.getEmail());
+		// sin srping security
+		// Optional<Usuario> userEmail = usuarioService.findByEmail(usuario.getEmail());
+		Optional<Usuario> user = usuarioService
+				.findById(Integer.parseInt(session.getAttribute("idUsuario").toString()));
 		// LOGGER.warn("Usuario obtenido de la DB: {}", userEmail.get());
 		// condicion temporal sin spring security
-		if (userEmail.isPresent()) {
-			LOGGER.warn("Usuario obtenido de la DB: {}", userEmail.get());
+		if (user.isPresent()) {
+			LOGGER.warn("Usuario obtenido de la DB: {}", user.get());
 			// id del usuario encontrado
-			session.setAttribute("idUsuario", userEmail.get().getId());
+			session.setAttribute("idUsuario", user.get().getId());
 			// validacion tipo de usuario
-			if (userEmail.get().getTipo().equals("ADMIN")) {
+			if (user.get().getTipo().equals("ADMIN")) {
 				return "redirect:/administrador";
 			} else {
 				return "redirect:/";
